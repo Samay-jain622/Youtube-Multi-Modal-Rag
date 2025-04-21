@@ -4,7 +4,6 @@ chromadb
 pytube
 youtube-transcript-api
 openai
-pytorch
 torchvision
 ftfy
 regex
