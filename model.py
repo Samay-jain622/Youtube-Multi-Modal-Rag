@@ -38,7 +38,7 @@ os.makedirs(DB_DIR, exist_ok=True)
 def get_video_id(url):
     return url.split("v=")[-1] if "v=" in url else url.split("/")[-1]
 
-video_id = get_video_id(video_url)
+# video_id = get_video_id(video_url)
 
 
 def extract_transcript(video_id):
@@ -128,10 +128,10 @@ image_store = Chroma(
     persist_directory=DB_DIR,
     embedding_function=image_embedding
 )
-text_docs = extract_transcript(video_id)
-video_path = download_video(video_url)
+# text_docs = extract_transcript(video_id)
+# video_path = download_video(video_url)
 
-image_docs = extract_frames(video_path)
+# image_docs = extract_frames(video_path)
 
 from langchain.schema import Document
 
@@ -163,12 +163,12 @@ def merge_documents(docs, chunk_size=3, overlap=1):
 
     return merged_docs
 
-merged_docs=merge_documents(text_docs,5,3)
+# merged_docs=merge_documents(text_docs,5,3)
 
 
 
-upload_text_chunks(merged_docs)
-upload_image_chunks(image_docs)
+# upload_text_chunks(merged_docs)
+# upload_image_chunks(image_docs)
 
 retriever_text = text_store.as_retriever(search_type="similarity", search_kwargs={"k": 10})
 retriever_image = image_store.as_retriever(search_type="similarity", search_kwargs={"k": 10})
