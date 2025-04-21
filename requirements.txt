@@ -2,6 +2,7 @@ google-generativeai
 langchain
 chromadb
 pytube
+opencv-python
 youtube-transcript-api
 openai
 torchvision
