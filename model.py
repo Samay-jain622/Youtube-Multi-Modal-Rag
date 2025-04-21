@@ -28,12 +28,11 @@ from langchain_community.document_transformers import (
     EmbeddingsClusteringFilter,
     EmbeddingsRedundantFilter,
 )
-video_url = "https://youtu.be/3dhcmeOTZ_Q"
+
 DB_DIR = "./chroma_store"
 TEXT_COLLECTION = "text_store"
 IMAGE_COLLECTION = "image_store"
 os.makedirs(DB_DIR, exist_ok=True)
-
 
 def get_video_id(url):
     return url.split("v=")[-1] if "v=" in url else url.split("/")[-1]
@@ -128,12 +127,6 @@ image_store = Chroma(
     persist_directory=DB_DIR,
     embedding_function=image_embedding
 )
-# text_docs = extract_transcript(video_id)
-# video_path = download_video(video_url)
-
-# image_docs = extract_frames(video_path)
-
-from langchain.schema import Document
 
 from langchain.schema import Document
 
@@ -163,13 +156,6 @@ def merge_documents(docs, chunk_size=3, overlap=1):
 
     return merged_docs
 
-# merged_docs=merge_documents(text_docs,5,3)
-
-
-
-# upload_text_chunks(merged_docs)
-# upload_image_chunks(image_docs)
-
 retriever_text = text_store.as_retriever(search_type="similarity", search_kwargs={"k": 10})
 retriever_image = image_store.as_retriever(search_type="similarity", search_kwargs={"k": 10})
 
@@ -188,7 +174,6 @@ compression_retriever = ContextualCompressionRetriever(
     base_compressor=compression_pipeline,
     base_retriever=lotr
 )
-
 from PIL import Image
 import io
 from langchain.memory import ConversationEntityMemory
@@ -274,7 +259,6 @@ def print_and_return(value):
 def get_history(inputs):
     return memory.load_memory_variables({"question": inputs})["history"]
 
-
 chat_rag_chain = (
     # RunnableMap({
     #     "question": RunnablePassthrough(),
@@ -288,13 +272,6 @@ chat_rag_chain = (
     llm
 )
 
-response = chat_rag_chain.invoke("What are the key points discussed in this video?")
 
 
-print(response.content)
-query="What are the key points discussed in this video?"
-response.content
-memory.save_context(
-    inputs={"question": query},
-    outputs={"answer": response.content}
-)
+
