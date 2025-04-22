@@ -68,7 +68,9 @@ def download_video(url, save_path="downloads"):
     return os.path.join(save_path, 'input_vid.mp4')
 
 
-def extract_frames(video_path, every_n_seconds=4):
+def extract_frames(video_path, every_n_seconds=4,output_dir="frames"):
+    os.makedirs(output_dir,exist_ok=True)
+
     vidcap = cv2.VideoCapture(video_path)
     fps = vidcap.get(cv2.CAP_PROP_FPS)
     frame_interval = int(fps * every_n_seconds)
@@ -80,7 +82,7 @@ def extract_frames(video_path, every_n_seconds=4):
 
     while success:
         if count % frame_interval == 0:
-            frame_path = f"frame_{i}.jpg"
+            frame_path = os.path.join(output_dir, f"frame_{i}.jpg")
             cv2.imwrite(frame_path, image)
             frames.append(Document(
                 page_content=frame_path,
@@ -94,7 +96,11 @@ def extract_frames(video_path, every_n_seconds=4):
 
 text_embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 image_embedding = HuggingFaceEmbeddings(model_name="clip-ViT-B-32")
-
+text_store = Chroma(
+    collection_name=TEXT_COLLECTION,
+    persist_directory=DB_DIR,
+    embedding_function=text_embedding
+)
 def upload_text_chunks(text_chunks):
     for i, doc in enumerate(text_chunks):
         text = doc.page_content
@@ -117,11 +123,7 @@ def upload_image_chunks(image_chunks):
             documents=[image_path],
             metadatas=[doc.metadata]
         )
-text_store = Chroma(
-    collection_name=TEXT_COLLECTION,
-    persist_directory=DB_DIR,
-    embedding_function=text_embedding
-)
+
 image_store = Chroma(
     collection_name=IMAGE_COLLECTION,
     persist_directory=DB_DIR,
@@ -183,7 +185,7 @@ from langchain_core.runnables import Runnable
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash-001",
+    model="gemini-2.0-flash-001",
     temperature=0.4,
     convert_system_message_to_human=True
 )
@@ -271,6 +273,9 @@ chat_rag_chain = (
      RunnableLambda(lambda prompt_value: prompt_value.to_messages()) |
     llm
 )
+
+
+
 
 
 

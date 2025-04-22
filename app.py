@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import shutil
 from model import (
     get_video_id,
     extract_transcript,
@@ -12,6 +13,14 @@ from model import (
     chat_rag_chain,
 )
 from langchain.schema import Document
+def clear_directory(directory_path):
+    if os.path.exists(directory_path):
+        for filename in os.listdir(directory_path):
+            file_path = os.path.join(directory_path, filename)
+            if os.path.isdir(file_path):
+                shutil.rmtree(file_path)  # Delete subdirectories
+            else:
+                os.remove(file_path)  
 
 # Set Streamlit config
 st.set_page_config(page_title="YouTube Video QA", layout="wide")
@@ -39,6 +48,7 @@ if st.button("Process Video"):
         if video_url != st.session_state.last_video_url:
             st.session_state.chat_history = []
             st.session_state.last_video_url = video_url
+         
 
         with st.spinner("Downloading and processing video..."):
             # Extract and process
@@ -79,6 +89,3 @@ with chat_container:
             st.markdown(f"""<div style="text-align:right;"><strong>🧑 You:</strong> {msg}</div>""", unsafe_allow_html=True)
         else:
             st.markdown(f"""<div style="text-align:left;"><strong>🤖 Bot:</strong> {msg}</div>""", unsafe_allow_html=True)
-
-
-
